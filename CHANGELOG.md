@@ -3,6 +3,11 @@
 `tensorfold update` prints the sections below that are newer than the version you had. Each release's page on
 GitHub has the full notes and the measurements behind them.
 
+## Unreleased
+
+- Docs: on M1-M4, decode runs the `simd_qmm` row kernels while prefill runs MLX's `quantized_matmul` (its kernels
+  are faster on large prompt chunks); `simd_qmm.install()` is deliberately unwired (#97).
+
 ## 0.5.0 (29 Sep 2026)
 
 - **OpenAI's Responses API on both servers.** `/v1/responses` runs as a chat completion: every response has its chat

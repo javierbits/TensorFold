@@ -26,6 +26,7 @@ Choose an 8-bit checkpoint made from the original model when you want its 8-bit 
 
 With `--lane-kernels auto`, M5 uses its native kernels when they support the checkpoint's formats and otherwise uses the packed row decoder.
 M1 through M4 use the packed row decoder.
+On M1 through M4, decode runs the `simd_qmm` row kernels while prefill runs MLX's own `quantized_matmul`: on large prompt chunks MLX's kernels are the faster ones (issue #97 measured 0.8x at 1,024 rows and 0.6x at 4,096 for `simd_qmm` against stock), so `simd_qmm.install()` is deliberately left unwired.
 `--lane-kernels on` requires an M5-generation GPU and formats supported by its native kernels; an incompatible format is refused with guidance.
 The language path retains BF16 activation requirements.
 The new Metal affine projection reader accepts BF16, FP16 or FP32 affine scales and biases with matching metadata dtypes.

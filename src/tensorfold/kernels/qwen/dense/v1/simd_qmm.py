@@ -540,7 +540,13 @@ def _call(self: Any, x: mx.array) -> mx.array:
 
 
 def install(model: Any) -> int:
-    """Idempotently route fitting linears through qmm after per-shape scalar/MMA bit checks, including serial calls, and return the count."""
+    """Route fitting linears through qmm directly (benchmarks, tests): serving never calls it.
+
+    ``row_matmul.install`` (the M1-M4 decoder) and ``qwen4_exp.decode`` route this kernel through
+    their own callers instead, so prefill keeps stock ``mx.quantized_matmul``: qmm wins on few rows
+    and loses to it above (about 0.8x at 1K rows, 0.6x at 4K, M2 Max), and patching every
+    ``nn.QuantizedLinear`` would put prefill on the slow side. See TensorFold issue #97.
+    """
 
     global _ORIG, enabled
     import mlx.nn as nn
